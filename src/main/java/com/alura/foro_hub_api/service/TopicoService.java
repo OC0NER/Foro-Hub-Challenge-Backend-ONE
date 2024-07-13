@@ -27,13 +27,15 @@ public class TopicoService {
         return new DatosTopicoConRespuestas(validarExistenciaTopico(id));
     }
 
-    public DatosDetalleTopico actualizarTopico(Long id, DatosRegistroTopico datosActualizacionTopico) {
+    public DatosDetalleTopico actualizarTopico(Long id, DatosActualizarTopico datosActualizarTopico) {
         var topico = validarExistenciaTopico(id);
-        topico.setAutor(datosActualizacionTopico.autor());
-        topico.setTitulo(datosActualizacionTopico.titulo());
-        topico.setMensaje(datosActualizacionTopico.mensaje());
-        topico.setCurso(datosActualizacionTopico.curso());
-
+        topico.setAutor(datosActualizarTopico.autor());
+        topico.setTitulo(datosActualizarTopico.titulo());
+        topico.setMensaje(datosActualizarTopico.mensaje());
+        topico.setCurso(datosActualizarTopico.curso());
+        if(datosActualizarTopico.estado().toUpperCase().equals("CERRADO")){
+            topico.setEstado("CERRADO");
+        }
         topicoRepository.save(topico);
 
         return new DatosDetalleTopico(topico);

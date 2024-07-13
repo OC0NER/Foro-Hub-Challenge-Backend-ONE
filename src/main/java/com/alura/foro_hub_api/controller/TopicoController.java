@@ -11,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 
 @RestController
@@ -27,9 +30,10 @@ public class TopicoController {
     private RespuestaService respuestaService;
 
     @PostMapping
-    public ResponseEntity registrarTopico(@RequestBody @Valid DatosRegistroTopico datosRegistroTopico) {
+    public ResponseEntity<DatosDetalleTopico> registrarTopico(@RequestBody @Valid DatosRegistroTopico datosRegistroTopico, UriComponentsBuilder uriComponentsBuilder) {
         var response = topicoService.registrarTopico(datosRegistroTopico);
-        return ResponseEntity.ok(response);
+        URI url = uriComponentsBuilder.path("/topicos/{id}").buildAndExpand(response.id()).toUri();
+        return ResponseEntity.created(url).body(response);
     }
 
     @GetMapping
@@ -39,20 +43,20 @@ public class TopicoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity detallarTopico(@PathVariable Long id) {
+    public ResponseEntity<DatosTopicoConRespuestas> detallarTopico(@PathVariable Long id) {
         return ResponseEntity.ok().body(topicoService.detallarTopico(id));
     }
 
     @PostMapping("/{id}/respuesta")
-    public ResponseEntity responderTopico(@PathVariable Long id, @RequestBody @Valid DatosRespuesta datosRespuesta) {
+    public ResponseEntity<DatosRespuesta> responderTopico(@PathVariable Long id, @RequestBody @Valid DatosRespuesta datosRespuesta) {
         respuestaService.registrarRespuesta(id, datosRespuesta);
         return ResponseEntity.ok(datosRespuesta);
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity actualizarTopico(@PathVariable Long id, @RequestBody DatosRegistroTopico datosActualizacionTopico) {
-        var response = topicoService.actualizarTopico(id, datosActualizacionTopico);
+    public ResponseEntity<DatosDetalleTopico> actualizarTopico(@PathVariable Long id, @RequestBody DatosActualizarTopico datosActualizarTopico) {
+        var response = topicoService.actualizarTopico(id, datosActualizarTopico);
         return ResponseEntity.ok(response);
     }
 
